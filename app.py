@@ -7,7 +7,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['JSON_AS_ASCII'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 db = SQLAlchemy(app)
 
 
@@ -126,6 +125,8 @@ def get_all_users():
         with db.session.begin():
             db.session.add_all(new_offer)
 
+        return {}, 200
+
 
 @app.route('/users/<int:uid>', methods=['GET', 'PUT', 'DELETE'])  # один пользователь
 def get_user_by_id(uid):
@@ -157,10 +158,14 @@ def get_user_by_id(uid):
         db.session.add(user)
         db.session.commit()
 
+        return {}, 200
+
     elif request.method == 'DELETE':
         user = Order.query.get(uid)
         db.session.delete(user)
         db.session.commit()
+
+        return {}, 200
 
 
 @app.route('/orders', methods=['GET', 'POST'])
@@ -201,6 +206,8 @@ def get_all_orders():
         with db.session.begin():
             db.session.add_all(new_order)
 
+        return {}, 200
+
 
 @app.route('/orders/<int:oid>', methods=['GET', 'PUT', 'DELETE'])
 def get_order_by_oid(oid):
@@ -235,10 +242,14 @@ def get_order_by_oid(oid):
         db.session.add(order)
         db.session.commit()
 
+        return {}, 200
+
     elif request.method == 'DELETE':
         order = Order.query.get(oid)
         db.session.delete(order)
         db.session.commit()
+
+        return {}, 200
 
 
 @app.route('/offers', methods=['GET', 'POST'])  # все офферы
@@ -261,10 +272,12 @@ def get_all_offers():
             executor_id=result['executor_id']
         )
         with db.session.begin():
-            db.session.add_all(new_offer)
+            db.session.add(new_offer)
+
+        return {}, 200
 
 
-@app.route('/offers/<int:oid>', methods=['GET'])  # один пользователь
+@app.route('/offers/<int:oid>', methods=['GET', 'PUT', 'DELETE'])  # один пользователь
 def get_offer_by_id(oid):
     if request.method == 'GET':
         offer = Offer.query.get(oid)
@@ -285,10 +298,14 @@ def get_offer_by_id(oid):
         db.session.add(offer)
         db.session.commit()
 
+        return {}, 200
+
     elif request.method == 'DELETE':
         offer = Offer.query.get(oid)
         db.session.delete(offer)
         db.session.commit()
+
+        return {}, 200
 
 
 if __name__ == '__main__':
